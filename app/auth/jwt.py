@@ -4,25 +4,34 @@ import os
 from fastapi import HTTPException
 from dotenv import load_dotenv
 
-load_dotenv()
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-
-ALGORITHM = os.getenv("ALGORITHM")
-
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+from app.config import settings
 
 
-def create_access_token(data:dict):
 
-    payload = data.copy()
+def create_access_token(
+    user_id: int,
+    email: str,
+    role: str
+):
 
-    payload["exp"] = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = (
+        datetime.now(timezone.utc)
+        + timedelta(
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
+    )
+
+    payload = {
+        "sub": str(user_id),
+        "email": email,
+        "role": role,
+        "exp": expire
+    }
 
     token = jwt.encode(
         payload,
-        SECRET_KEY,
-        algorithm=ALGORITHM
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM
     )
 
     return token
@@ -32,8 +41,8 @@ def verify_token(token: str):
     try:
         payload = jwt.decode(
             token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM]
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM]
         )
 
         return payload

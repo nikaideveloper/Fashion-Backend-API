@@ -44,6 +44,16 @@ class User(Base) :
                 nullable=False
         )
 
+        reset_token = Column(
+                String(255),
+                nullable=True
+        )
+
+        reset_token_expires = Column(
+                DateTime,
+                nullable=True
+        )
+
         
         created_at =  Column(
             DateTime,

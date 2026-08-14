@@ -21,6 +21,28 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class UserLogin(BaseModel):
+    email : EmailStr
+    password : str
+
+
 class UserUpdate(BaseModel):
     name: str | None = None
     email: EmailStr | None = None
+
+
+class ChangePassword(BaseModel):
+      current_password: str
+      new_password: str
+
+
+
+class ForgotPassword(BaseModel):
+
+    email: EmailStr
+
+
+class ResetPassword(BaseModel):
+
+    token: str
+    new_password: str
