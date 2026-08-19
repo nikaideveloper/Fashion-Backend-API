@@ -7,8 +7,10 @@ from app.auth.jwt import verify_token
 from app.crud.user import get_user_by_email , get_user_by_id
 from app.database import get_db
 
+from app.models.user import User
+
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="login"
+    tokenUrl="users/login"
 )
 
 
@@ -52,4 +54,13 @@ def get_current_user(token :str=Depends(oauth2_scheme), db : Session = Depends(g
     
 
 
-   
+def require_admin(
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required"
+        )
+
+    return current_user   

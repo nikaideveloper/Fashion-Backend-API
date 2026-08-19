@@ -56,7 +56,7 @@ def get_profile(current_user  =  Depends(get_current_user)):
     return current_user
 
 
-@router.put("/update",
+@router.put("/user-update",
             response_model=UserResponse
             )
 def updated_user(data : UserUpdate,

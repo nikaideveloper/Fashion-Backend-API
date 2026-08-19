@@ -153,8 +153,6 @@ def change_password(
 
 
 
-
-
 async def create_reset_token(
     db,
     email: str
@@ -202,7 +200,8 @@ async def create_reset_token(
         "message": (
             "If the email exists, "
             "a reset link has been sent"
-        )
+        ),
+       
     }
 
 
@@ -226,15 +225,15 @@ def reset_password(
 
     now = datetime.now(timezone.utc)
 
-    if (
-        not user.reset_token_expires
-        or user.reset_token_expires < now
-    ):
+    expires = user.reset_token_expires
 
-        raise HTTPException(
-            status_code=400,
-            detail="Reset token expired"
-        )
+
+    if expires is not None and expires.tzinfo is None:
+        expires = expires.replace(tzinfo=timezone.utc)
+
+    
+    if not expires or expires < now: 
+          raise HTTPException( status_code=400, detail="Reset token expired" )
 
     user.password_hash = hash_password(
         data.new_password
